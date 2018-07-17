@@ -17,7 +17,29 @@ defined('_JEXEC') or die;
 // Include the syndicate functions only once
 require_once dirname(__FILE__) . '/helper.php';
 
-$hello = modHelloWorldHelper::getHello($params);
+
+$js = "
+jQuery(document).ready(function() {
+    jQuery('#tdhRechercher').on('click', function () {
+        console.log('Lancement de la recherche');
+		jQuery.ajax({
+			url : 'index.php?option=com_ajax&module=tdhsejours&method=getList&format=json',
+			data: { list:'depart' },
+			success: function(result, status, xhr) { console.log('reponse OK');console.log(result); },
+			error: function() { console.log('ajax call failed'); },
+		});
+        return false;
+    });
+})
+";
+$doc  = JFactory::getDocument();
+$doc->addScriptDeclaration($js);
+
+
+$hello = modtdhsejourHelper::getHello($params);
+
 require JModuleHelper::getLayoutPath('mod_tdhsejours');
+
+
 
 ?>

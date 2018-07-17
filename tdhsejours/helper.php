@@ -11,7 +11,7 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-class ModHelloWorldHelper
+class ModtdhsejourHelper
 {
     /**
      * Retrieves the hello message
@@ -22,8 +22,35 @@ class ModHelloWorldHelper
      */    
     public static function getHello($params)
     {
-        return 'Hello, World!';
+        return 'Dev en cours : THD Séjours!';
+		
+	}
+	
+	
+    public static function getAjax()
+    {
+        include_once JPATH_ROOT . '/components/com_content/helpers/route.php';
+
+        $input = JFactory::getApplication()->input;
+        $data  = $input->get('data', '', 'string');
+
+        $output = 'AJAX en cours : getAjax';
+        
+        return $output;
     }
+	
+	public static function getListAjax()
+    {
+        //include_once JPATH_ROOT . '/components/com_content/helpers/route.php';
+
+        $input = JFactory::getApplication()->input;
+        $data  = $input->get('data', '', 'string');
+
+        $output = 'AJAX en cours : GETList';
+        
+        return $output;
+    }
+
 }
 
 ?>
