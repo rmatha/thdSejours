@@ -1,45 +1,72 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
- * Hello World! Module Entry Point
- * 
- * @package    Joomla.Tutorials
- * @subpackage Modules
- * @license    GNU/GPL, see LICENSE.php
- * @link       http://docs.joomla.org/J3.x:Creating_a_simple_module/Developing_a_Basic_Module
- * mod_helloworld is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
+ *
+ * File       mod_session.php
+ * Created    5/22/13 6:43 AM
+ * Author     Matt Thomas | matt@betweenbrain.com | http://betweenbrain.com
+ * Support    https://github.com/betweenbrain/
+ * Copyright  Copyright (C) 2013 betweenbrain llc. All Rights Reserved.
+ * License    GNU General Public License version 2, or later.
  */
 
-// No direct access
-defined('_JEXEC') or die;
-// Include the syndicate functions only once
-require_once dirname(__FILE__) . '/helper.php';
+// Include the helper.
+require_once __DIR__ . '/helper.php';
 
+// Instantiate global document object
+$doc = JFactory::getDocument();
 
-$js = "
-jQuery(document).ready(function() {
-    jQuery('#tdhRechercher').on('click', function () {
-        console.log('Lancement de la recherche');
-		jQuery.ajax({
-			url : 'index.php?option=com_ajax&module=tdhsejours&method=getList&format=json',
-			data: { list:'depart' },
-			success: function(result, status, xhr) { console.log('reponse OK');console.log(result); },
-			error: function() { console.log('ajax call failed'); },
+$loadJquery = $params->get('loadJquery', 1);
+$format     = $params->get('format', 'debug');
+
+// Load jQuery
+if ($loadJquery == '1') {
+	$doc->addScript('//code.jquery.com/jquery-latest.min.js');
+}
+
+$js = <<<JS
+(function ($) {
+	$( document ).ready(function() {
+		$('.js-example-basic-single').select2();
+		var value   = 'toto',
+			action  = $(this).attr('class'),
+			request = {
+					'option' : 'com_ajax',
+					'module' : 'tdhsejours',
+					'cmd'    : action,
+					'data'   : value,
+					'format' : '{$format}'
+				};
+		$.ajax({
+			type   : 'POST',
+			data   : request,
+			success: function (response) {
+				console.log(response);
+				if(response.data){
+					var result = '';
+					$.each(response.data, function (index, value) {
+						result = result + ' ' + value;
+					});
+
+					$('.status').html(result);
+				} else {
+					$('.status').html(response);
+				}
+			},
+			error: function(response) {
+				var data = '',
+					obj = $.parseJSON(response.responseText);
+				for(key in obj){
+					data = data + ' ' + obj[key] + '<br/>';
+				}
+				$('.status').html(data);
+	        }
 		});
-        return false;
-    });
-})
-";
-$doc  = JFactory::getDocument();
+		return false;
+	});
+})(jQuery)
+JS;
+
 $doc->addScriptDeclaration($js);
 
-
-$hello = modtdhsejourHelper::getHello($params);
-
-require JModuleHelper::getLayoutPath('mod_tdhsejours');
-
-
-
-?>
+require(JModuleHelper::getLayoutPath('mod_tdhsejours'));

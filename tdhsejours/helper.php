@@ -1,56 +1,67 @@
-<?php
+<?php defined('_JEXEC') or die;
+
 /**
- * Helper class for Hello World! module
- * 
- * @package    Joomla.Tutorials
- * @subpackage Modules
- * @link http://docs.joomla.org/J3.x:Creating_a_simple_module/Developing_a_Basic_Module
- * @license        GNU/GPL, see LICENSE.php
- * mod_helloworld is free software. This version may have been modified pursuant
- * to the GNU General Public License, and as distributed it includes or
- * is derivative of works licensed under the GNU General Public License or
- * other free or open source software licenses.
+ * File       helper.php
+ * Created    6/7/13 1:51 PM
+ * Author     Matt Thomas | matt@betweenbrain.com | http://betweenbrain.com
+ * Support    https://github.com/betweenbrain/
+ * Copyright  Copyright (C) 2013 betweenbrain llc. All Rights Reserved.
+ * License    GNU General Public License version 2, or later.
  */
-class ModtdhsejourHelper
-{
-    /**
-     * Retrieves the hello message
-     *
-     * @param   array  $params An object containing the module parameters
-     *
-     * @access public
-     */    
-    public static function getHello($params)
-    {
-        return 'Dev en cours : THD Séjours!';
-		
+
+class modTdhsejoursHelper {
+
+	public static function getAjax() {
+
+		// Get module parameters
+		jimport('joomla.application.module.helper');
+		$input  = JFactory::getApplication()->input;
+		$module = JModuleHelper::getModule('tdhsejours');
+		$params = new JRegistry();
+		$params->loadString($module->params);
+		$node        = $params->get('node', 'data');
+		$session     = JFactory::getSession();
+		$sessionData = $session->get($node);
+
+		if (is_null($sessionData)) {
+			$sessionData = array();
+			$session->set($node, $sessionData);
+		}
+
+		if ($input->get('cmd')) {
+			$cmd  = $input->get('cmd');
+			$data = $input->get('data');
+
+			switch ($cmd) {
+				case "add" :
+					if (!isset($sessionData[$data]) && $data != '') {
+						$sessionData[$data] = $data;
+						$session->set($node, $sessionData);
+					}
+					break;
+
+				case "delete" :
+					if (isset($sessionData[$data])) {
+						unset($sessionData[$data]);
+						$session->set($node, $sessionData);
+					}
+					break;
+
+				case "destroy" :
+					$sessionData = NULL;
+					$session->set($node, $sessionData);
+					break;
+
+				case "debug" :
+					die('<pre>' . print_r($sessionData, TRUE) . '</pre>');
+					break;
+			}
+
+			if ($sessionData) {
+				return $sessionData;
+			}
+
+			return FALSE;
+		}
 	}
-	
-	
-    public static function getAjax()
-    {
-        include_once JPATH_ROOT . '/components/com_content/helpers/route.php';
-
-        $input = JFactory::getApplication()->input;
-        $data  = $input->get('data', '', 'string');
-
-        $output = 'AJAX en cours : getAjax';
-        
-        return $output;
-    }
-	
-	public static function getListAjax()
-    {
-        //include_once JPATH_ROOT . '/components/com_content/helpers/route.php';
-
-        $input = JFactory::getApplication()->input;
-        $data  = $input->get('data', '', 'string');
-
-        $output = 'AJAX en cours : GETList';
-        
-        return $output;
-    }
-
 }
-
-?>

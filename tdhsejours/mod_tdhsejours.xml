@@ -1,19 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="module" version="3.1.0" client="site" method="upgrade">
-    <name>TDH Séjours</name>
-    <author>Matha régis</author>
-    <version>1.0.8</version>
-    <description>Module pour afficher le moteur de recherche de SPEEDMEDIA</description>
-    <files>
-        <filename>mod_tdhsejours.xml</filename>
-        <filename module="mod_tdhsejours">mod_tdhsejours.php</filename>
-		<filename>index.html</filename>
-        <filename>helper.php</filename>
-        <filename>tmpl/default.php</filename>
-        <filename>tmpl/index.html</filename>
-		<filename>tmpl/tdhSejours.css</filename>
-		<filename>tmpl/tdhSejours.js</filename>
-    </files>
-    <config>
-    </config>
+<extension type="module"
+           version="2.5"
+           method="upgrade">
+	<name>TDH Sejours</name>
+	<creationDate>June 30, 2018</creationDate>
+	<author>Regis matha</author>
+	<authorUrl>http://tourdhorizon.com</authorUrl>
+	<copyright>Copyright (C) 2018 Tour d'horizon All rights reserved.</copyright>
+	<license>GNU General Public License version 2, or later.</license>
+	<version>2.5.1</version>
+	<description>MOD_SESSION_DESC</description>
+
+	<files>
+		<filename module="mod_tdhsejours">mod_tdhsejours.php</filename>
+		<filename>helper.php</filename>
+		<folder>tmpl</folder>
+	</files>
+
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.mod_tdhsejours.ini</language>
+	</languages>
+
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="format"
+				       type="list"
+				       default="debug"
+				       label="MOD_SESSION_FORMAT_LABEL"
+				       description="MOD_SESSION_FORMAT_DESC">
+					<option value="debug">Debug</option>
+					<option value="raw">Raw</option>
+					<option value="json">JSON</option>
+				</field>
+
+				<field name="loadJquery"
+				       type="list"
+				       default="1"
+				       label="MOD_SESSION_LOAD_JQUERY_LABEL"
+				       description="MOD_SESSION_LOAD_JQUERY_DESC">
+					<option value="1">Yes</option>
+					<option value="0">No</option>
+				</field>
+
+				<field name="node"
+				       type="text"
+				       default="data"
+				       label="MOD_SESSION_NODE_LABEL"
+				       description="MOD_SESSION_NODE_DESC"/>
+			</fieldset>
+		</fields>
+	</config>
 </extension>
