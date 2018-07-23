@@ -19,49 +19,75 @@ class modTdhsejoursHelper {
 		$module = JModuleHelper::getModule('tdhsejours');
 		$params = new JRegistry();
 		$params->loadString($module->params);
-		$node        = $params->get('node', 'data');
-		$session     = JFactory::getSession();
-		$sessionData = $session->get($node);
 
-		if (is_null($sessionData)) {
-			$sessionData = array();
-			$session->set($node, $sessionData);
-		}
-
+		
+		
 		if ($input->get('cmd')) {
+			// reinitialisation de la variable de session
+			$liste = array();
+			$map_url ='';	
+			$xml_rep = '';
 			$cmd  = $input->get('cmd');
 			$data = $input->get('data');
-
 			switch ($cmd) {
-				case "add" :
-					if (!isset($sessionData[$data]) && $data != '') {
-						$sessionData[$data] = $data;
-						$session->set($node, $sessionData);
+				case "depart" :
+					if (!isset($sessionData[$data])) {
+						$map_url = "http://www.speedresa.com/lib/xml.php?AGENCE=T15&list=aeroports";
+						$xml_rep = "aeroport";
 					}
 					break;
-
-				case "delete" :
-					if (isset($sessionData[$data])) {
-						unset($sessionData[$data]);
-						$session->set($node, $sessionData);
+				case "destination" :
+					if (!isset($sessionData[$data])) {
+						$map_url = "http://www.speedresa.com/lib/xml.php?AGENCE=T15&list=destinations";
 					}
 					break;
-
-				case "destroy" :
-					$sessionData = NULL;
-					$session->set($node, $sessionData);
-					break;
-
-				case "debug" :
-					die('<pre>' . print_r($sessionData, TRUE) . '</pre>');
-					break;
+				case "thematique" :
+					if (!isset($sessionData[$data])) {
+						$map_url = "http://www.speedresa.com/lib/xml.php?AGENCE=T15&list=thematiques";
+					}
+					break;	
+			}
+			if ($map_url) {
+				if (($response_xml_data = file_get_contents($map_url))===false){
+					$liste[] = array( 'code' =>'err1','libelle' =>'Chargement KO');
+				} else {
+					
+				   libxml_use_internal_errors(true);
+				   $data = simplexml_load_string($response_xml_data);
+				   if (!$data) {
+					   $liste[] = array( 'code' =>'err2','libelle' =>'Loading KO');
+					   
+				   } else {
+						if (!empty($xml_rep)) {
+							$data_ref = $data->aeroport;
+						}
+						else {
+							$data_ref = $data;
+						}
+						foreach ($data_ref as $item) {
+							$code = (string)$item->code;
+							$libelle = (string)$item->libelle;
+							$liste[] = array( 'code' =>$code,'libelle' =>$libelle);
+						}
+					  
+					  
+				   }
+				}
+				return json_encode($liste);
 			}
 
-			if ($sessionData) {
-				return $sessionData;
-			}
-
-			return FALSE;
+			
 		}
+		
+		return false;
+		
+	}
+	
+	function xml2array ( $xmlObject, $out = array () )
+	{
+		foreach ( (array) $xmlObject as $index => $node )
+			$out[$index] = ( is_object ( $node ) ) ? xml2array ( $node ) : $node;
+
+		return $out;
 	}
 }

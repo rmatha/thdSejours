@@ -21,9 +21,7 @@
 				Aéroports de départ
 			</div>
 			<div class="selectTHD">
-				<select class="js-example-basic-single selectAeroport" name="state">
-				  <option value="AL">aero1</option>
-				  <option value="WY">aero2</option>
+				<select class="js-example-basic-single selectdepart" message="Veuillez sélectionner l aéroport de départ" name="state">
 				</select>
 			</div>
 		</div>
@@ -32,21 +30,18 @@
 				Destination
 			</div>
 			<div class="selectTHD">
-				<select class="js-example-basic-single selectDestination" name="state">
-				  <option value="AL">dest1</option>
-				  <option value="WY">dest2</option>
+				<select class="js-example-basic-single selectdestination" message="Veuillez sélectionner la destination" name="state">
 				</select>
 			</div>
 		</div>
 		<div class="oneSelect">
 			<div class="labelTHD">
-				date
+				date de départ
 			</div>
 			<div class="selectTHD">
-				<select class="js-example-basic-single" name="state">
-				  <option value="AL">Alabama</option>
-				  <option value="WY">Wyoming</option>
-				</select>
+				<input data-role="datepicker" data-month="false" data-year="false">
+				<input data-role="datepicker" data-day="false" data-year="false" data-locale="fr-FR">
+				<input data-role="datepicker" data-day="false" data-month="false">
 			</div>
 		</div>
 		<div class="oneSelect">
@@ -54,9 +49,7 @@
 				Thématique
 			</div>
 			<div class="selectTHD">
-				<select class="js-example-basic-single" name="state">
-				  <option value="AL">Alabama</option>
-				  <option value="WY">Wyoming</option>
+				<select class="js-example-basic-single selectthematique" placeholder="veuillez sélectionner un truc" name="state">
 				</select>
 			</div>
 		</div>

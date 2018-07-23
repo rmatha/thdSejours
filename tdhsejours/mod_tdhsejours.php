@@ -19,6 +19,10 @@ $doc = JFactory::getDocument();
 $loadJquery = $params->get('loadJquery', 1);
 $format     = $params->get('format', 'debug');
 
+// rajout des fichiers de script TDH
+//$doc->addScript(__DIR__ . 'tdhsejours.js');
+
+
 // Load jQuery
 if ($loadJquery == '1') {
 	$doc->addScript('//code.jquery.com/jquery-latest.min.js');
@@ -27,43 +31,67 @@ if ($loadJquery == '1') {
 $js = <<<JS
 (function ($) {
 	$( document ).ready(function() {
-		$('.js-example-basic-single').select2();
-		var value   = 'toto',
-			action  = $(this).attr('class'),
-			request = {
-					'option' : 'com_ajax',
-					'module' : 'tdhsejours',
-					'cmd'    : action,
-					'data'   : value,
-					'format' : '{$format}'
-				};
+		console.log('Lancement de l appel AJAX');
+		// rajout d'une valeur vide
+		$('.js-example-basic-single').append($('<option>', {
+			value: '',
+			text: ''
+    	}));
+		
+		var actions  = ['depart','destination','thematique'];
+		
+		actions.forEach(appelAJAX);
+		
+		
+	});
+	
+	
+	function appelAJAX(item, index) {	
+		console.log('Lancement de l appel avec : '+item);
+	
+		var request = {
+			'option' : 'com_ajax',
+			'module' : 'tdhsejours',
+			'cmd'    : item,
+			'data'   : 'value',
+			'format' : '{$format}'
+		};
 		$.ajax({
 			type   : 'POST',
 			data   : request,
 			success: function (response) {
-				console.log(response);
-				if(response.data){
-					var result = '';
-					$.each(response.data, function (index, value) {
-						result = result + ' ' + value;
-					});
-
-					$('.status').html(result);
-				} else {
-					$('.status').html(response);
+				var JSONObject = $.parseJSON(response);  
+				console.log('JSONObject : '+JSONObject);  
+				for (var key in JSONObject) {
+					if (JSONObject.hasOwnProperty(key)) {
+					  console.log(JSONObject[key]["code"] + ", " + JSONObject[key]["libelle"]);
+					  // récupération des valeurs pour l'intégrer au select correspondant
+						var data = {id: JSONObject[key]["code"],text: JSONObject[key]["libelle"]};
+						var newOption = new Option(data.text, data.id, false, false);
+						$('.select'+item).append(newOption);
+					}
 				}
 			},
 			error: function(response) {
+				console.log('AJAX error :'+ response);
 				var data = '',
 					obj = $.parseJSON(response.responseText);
 				for(key in obj){
 					data = data + ' ' + obj[key] + '<br/>';
 				}
-				$('.status').html(data);
+				$('.status').html('erreur : '+data);
 	        }
 		});
-		return false;
-	});
+		// on n'affiche aucune valeur par défaut
+		$('.js-example-basic-single').select2({
+			allowClear: true,
+			placeholder: 'Sélectionner'
+			
+		});
+		
+		$('.select'+item).select2("val", "");
+	};
+	
 })(jQuery)
 JS;
 
